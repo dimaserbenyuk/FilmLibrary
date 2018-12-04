@@ -251,7 +251,7 @@
       },
       // Total Time
       filmTime () {
-        let min = (this.filmHours * 60) + (this.filmMinutes);
+        let min = (this.filmHours * 60) + (this.filmMinutes *1);
         return this.getHoursAndMinutes(min)
       },
       serialTime () {
