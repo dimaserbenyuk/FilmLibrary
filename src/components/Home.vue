@@ -2,54 +2,33 @@
   .content-wrapper
     section
       .container
-        h1.ui-title-1 Home
+        h1.ui-title-1 Add new {{ whatWatch }}
         form(@submit.prevent="onSubmit")
-          // Task title
-          .form-item(:class="{ errorInput: $v.taskTitle.$error }")
+          //! Task header
+          .header
             input(
             type="text"
+            id="title"
             placeholder="What we will watch?"
             v-model="taskTitle"
-              @change="$v.taskTitle.$touch()"
-                :class="{ error: $v.taskTitle.$error }"
+            style="margin-right: 12px;"
             )
-            .error(v-if="!$v.taskTitle.required") Title is required.
-          // Task desr
-          .form-item
-            textarea(
-            type="text"
-            placeholder="Description"
-            v-model="taskDescription"
-              @keyup.enter="newTask"
-            )
+            select(v-model="whatWatch" style="max-width: 230px;")
+              option(
+              v-for="option in options"
+                :key="option.title"
+                  :value="option.title"
+              ) {{ option.title }}
+          textarea(
+          type="text"
+          v-model="taskDescription"
+            @keyup.enter="newTask"
+          )
 
-          // WHAT WE WATCH
-          .option-list
-            input.what-watch--radio(
-            type="radio"
-            id="radioFilm"
-            value="Film"
-            v-model="whatWatch"
-            )
-            label(
-            for="radioFilm"
-            ) Film
-            input.what-watch--radio(
-            type="radio"
-            id="radioSerial"
-            value="Serial"
-            v-model="whatWatch"
-            )
-            label(
-            for="radioSerial"
-            ) Serial
-
-          // TOTAL TIME
+          //* TOTAL TIME FOR WHAT WATCH
           .total-time
-            // Film Time
-            .total-time__film(
-            v-if="whatWatch === 'Film'"
-            )
+            //* Film Time
+            .time-film(v-if="whatWatch === 'Film'")
               span.time-title Hours
               input.time-input(
               type="number"
@@ -60,13 +39,10 @@
               type="number"
               v-model="filmMinutes"
               )
-              // Show time
               p {{ filmTime }}
 
-            // Serial Time
-            .total-time__serial(
-            v-if="whatWatch === 'Serial'"
-            )
+            //* Serial Time
+            .time-serial(v-if="whatWatch === 'Serial'")
               span.time-title How many season?
               input.time-input(
               type="number"
@@ -82,8 +58,30 @@
               type="number"
               v-model="serialSeriesMinutes"
               )
-              // Show time
               p {{ serialTime }}
+
+            //* Course Time
+            .time-course(v-if="whatWatch === 'Course'")
+              span.time-title Average Hours
+              input.time-input(
+              type="number"
+              v-model="courseHours"
+              )
+              span.time-title Average Minutes
+              input.time-input(
+              type="number"
+              v-model="courseMinutes"
+              )
+              p {{ courseTime }}
+
+            //* Read
+            .time-book(v-if="whatWatch === 'Book'")
+              span.time-title How many pages?
+              input.time-input(
+              type="number"
+              v-model="pages"
+              )
+              p {{ readTime }}
 
           // TAG LIST
 
@@ -147,8 +145,15 @@
         submitStatus: null,
         taskTitle: '',
         taskDescription: '',
+        options: [
+          {title: 'Film', count: 0},
+          {title: 'Serial', count: 0},
+          {title: 'Course', count: 0},
+          {title: 'Book', count: 0}
+        ],
         whatWatch: 'Film',
         // Total Time
+        totalTime: 0,
         // Film
         filmHours: 1,
         filmMinutes: 30,
@@ -156,6 +161,11 @@
         serialSeason: 1,
         serialSeries: 11,
         serialSeriesMinutes: 40,
+        // Course
+        courseHours: 8,
+        courseMinutes: 30,
+        // Book
+        pages: 320,
         // Tags
         tagTitle: '',
         tagMenuShow: false,
@@ -263,6 +273,8 @@
 </script>
 
 <style lang="stylus" scoped>
+  .header
+    display: flex
   //
   // Options
   //
@@ -295,11 +307,18 @@
   //
   .tag-list
     margin-bottom 20px
-  .ui-tag__wrapper
-    margin-right 18px
-    margin-bottom 10px
-    &:last-child
-      margin-right 0
+  // Tag Menu Show
+  .tag-list--menu
+    display flex
+    justify-content space-between
+    align-items center
+  // New Tag Input
+  .tag-add--input
+    margin-bottom 0
+    margin-right 10px
+    height 42px
+
+      //////////////////
   .ui-tag
     &.used
       background-color: #444ce0
@@ -311,6 +330,7 @@
     .button-close
       &.active
         transform: rotate(45deg)
+        ////////////////////
   // Tag Menu Show
   .tag-list--menu
     display flex
